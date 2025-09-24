@@ -1,0 +1,757 @@
+{% extends "base.html" %}
+{% block title %}My Orders - E-Shop{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">Your Orders</h3>
+
+    {% if orders %}
+    <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ order.name }}</td>
+                <td>₹ {{ order.price }}</td>
+                <td><img src="{{ order.image }}" alt="{{ order.name }}" width="50"></td>
+                <td>
+                    <a href="{{ url_for('delete_order', order_id=order.id) }}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure to delete this order?')">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center">You have no orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - E-Shop</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .brand-icon i {
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #1e5dff;
+            background: rgba(30, 93, 255, 0.1);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .breadcrumb-nav {
+            margin-top: 1rem;
+        }
+
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        /* Orders Container */
+        .orders-container {
+            padding: 2rem 0;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .orders-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e5dff;
+            display: block;
+        }
+
+        .stat-label {
+            color: #64748b;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Order Cards */
+        .orders-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .order-number {
+            font-weight: 700;
+            color: #1a202c;
+            font-size: 1.1rem;
+        }
+
+        .order-status {
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .order-content {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e5dff;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-date {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-track {
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-track:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(30, 93, 255, 0.3);
+            color: white;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 80px;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .shop-now-btn {
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .shop-now-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 93, 255, 0.3);
+            color: white;
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1e5dff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .orders-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .order-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .product-image {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .order-actions {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .orders-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .order-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="brand-name">DN Spurt</div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="{{ url_for('home') if url_for is defined else '#' }}" class="nav-link">
+                        <i class="fas fa-home me-1"></i> Home
+                    </a>
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-box me-1"></i> My Orders
+                    </a>
+                    <a href="{{ url_for('logout') if url_for is defined else '#' }}" class="nav-link">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">Your Orders 📦</h1>
+                        <p class="page-subtitle">Track and manage all your purchases in one place</p>
+                    </div>
+                    <div class="col-md-4">
+                        <nav class="breadcrumb-nav">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url_for('home') if url_for is defined else '#' }}">Home</a>
+                                </li>
+                                <li class="breadcrumb-item active">My Orders</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Container -->
+    <div class="container orders-container">
+        {% if orders %}
+            <!-- Order Statistics -->
+            <div class="orders-stats">
+                <div class="stat-card">
+                    <span class="stat-number">{{ orders|length }}</span>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">₹{{ orders|sum(attribute='price')|default('0') }}</span>
+                    <div class="stat-label">Total Spent</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ orders|length }}</span>
+                    <div class="stat-label">Delivered</div>
+                </div>
+            </div>
+
+            <!-- Orders Grid -->
+            <div class="orders-grid">
+                {% for order in orders %}
+                <div class="order-card" data-order-id="{{ order.id }}">
+                    <div class="order-header">
+                        <div class="order-number">Order #{{ 1000 + loop.index }}</div>
+                        <div class="order-status">Delivered</div>
+                    </div>
+                    
+                    <div class="order-content">
+                        <img src="{{ order.image }}" 
+                             alt="{{ order.name }}" 
+                             class="product-image"
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"80\" height=\"80\" viewBox=\"0 0 80 80\"><rect width=\"80\" height=\"80\" fill=\"%23f3f4f6\"/><text x=\"40\" y=\"40\" text-anchor=\"middle\" dy=\".3em\" fill=\"%236b7280\" font-family=\"Arial\" font-size=\"10\">No Image</text></svg>'">
+                        
+                        <div class="product-info">
+                            <div class="product-name">{{ order.name }}</div>
+                            <div class="product-price">₹{{ order.price }}</div>
+                            <div class="order-date">
+                                <i class="fas fa-calendar me-1"></i>
+                                Ordered on {{ moment().format('MMM DD, YYYY') if moment else 'Recently' }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="trackOrder({{ order.id }})">
+                            <i class="fas fa-truck me-1"></i> Track Order
+                        </button>
+                        <button class="btn-delete" onclick="confirmDelete({{ order.id }}, '{{ order.name }}')">
+                            <i class="fas fa-trash me-1"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3 class="empty-title">No Orders Yet</h3>
+                <p class="empty-subtitle">Start shopping to see your orders here</p>
+                <a href="{{ url_for('home') if url_for is defined else '#' }}" class="shop-now-btn">
+                    <i class="fas fa-shopping-cart me-2"></i>Start Shopping
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Cancel Order
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Are you sure you want to cancel this order?</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Product:</strong> <span id="productName"></span>
+                    </div>
+                    <p class="text-muted small">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Order</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash me-1"></i>Cancel Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentOrderId = null;
+
+        // Function to confirm delete
+        function confirmDelete(orderId, productName) {
+            currentOrderId = orderId;
+            document.getElementById('productName').textContent = productName;
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        }
+
+        // Handle confirm delete button
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (currentOrderId) {
+                deleteOrder(currentOrderId);
+            }
+        });
+
+        // Function to delete order
+        function deleteOrder(orderId) {
+            const btn = document.getElementById('confirmDeleteBtn');
+            const originalText = btn.innerHTML;
+            
+            // Show loading state
+            btn.innerHTML = '<div class="loading-spinner me-2"></div>Canceling...';
+            btn.disabled = true;
+            
+            // Simulate API call (replace with actual delete request)
+            setTimeout(() => {
+                // Hide modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                modal.hide();
+                
+                // Remove order card with animation
+                const orderCard = document.querySelector(`[data-order-id="${orderId}"]`);
+                if (orderCard) {
+                    orderCard.style.transform = 'translateX(-100%)';
+                    orderCard.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        orderCard.remove();
+                        
+                        // Check if no orders left
+                        const remainingOrders = document.querySelectorAll('.order-card');
+                        if (remainingOrders.length === 0) {
+                            location.reload(); // Reload to show empty state
+                        }
+                        
+                        // Update statistics
+                        updateStatistics();
+                    }, 300);
+                }
+                
+                // Reset button
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                // Show success notification
+                showNotification('Order canceled successfully', 'success');
+                
+                // In real app, redirect to actual delete URL:
+                // window.location.href = `{{ url_for('delete_order', order_id='') if url_for is defined else '/delete_order/' }}${orderId}`;
+                
+            }, 1500);
+        }
+
+        // Function to track order
+        function trackOrder(orderId) {
+            showNotification('Opening order tracking...', 'info');
+            
+            // In real app, redirect to tracking page
+            setTimeout(() => {
+                console.log('Tracking order:', orderId);
+                // window.location.href = `/track/${orderId}`;
+            }, 1000);
+        }
+
+        // Function to update statistics
+        function updateStatistics() {
+            const remainingOrders = document.querySelectorAll('.order-card').length;
+            const statNumbers = document.querySelectorAll('.stat-number');
+            
+            if (statNumbers.length >= 3) {
+                statNumbers[0].textContent = remainingOrders;
+                statNumbers[2].textContent = remainingOrders;
+            }
+        }
+
+        // Function to show notifications
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add loading states to action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const trackButtons = document.querySelectorAll('.btn-track');
+            
+            trackButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<div class="loading-spinner me-2"></div>Loading...';
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

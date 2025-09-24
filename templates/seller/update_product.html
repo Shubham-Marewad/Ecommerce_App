@@ -1,0 +1,899 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Product{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.5;
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .breadcrumb-nav {
+        margin-top: 1rem;
+    }
+
+    .breadcrumb {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0;
+    }
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: white;
+    }
+
+    /* Form Container */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 0;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        border: none;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        padding: 2rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .form-header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .form-header-icon i {
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .form-body {
+        padding: 2.5rem;
+    }
+
+    /* Product Info Card */
+    .product-info-card {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        border: 1px solid #93c5fd;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-info-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .current-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 2px solid #93c5fd;
+    }
+
+    .current-image-placeholder {
+        width: 80px;
+        height: 80px;
+        background: #e0f2fe;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0891b2;
+        border: 2px solid #93c5fd;
+    }
+
+    .product-current-info {
+        flex-grow: 1;
+    }
+
+    .product-current-name {
+        font-weight: 700;
+        color: #1e40af;
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-current-details {
+        display: flex;
+        gap: 1rem;
+        color: #1e40af;
+        font-size: 0.9rem;
+    }
+
+    .product-current-price {
+        font-weight: 600;
+    }
+
+    .product-current-stock {
+        font-weight: 600;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label i {
+        color: #f59e0b;
+        font-size: 1rem;
+    }
+
+    .form-control {
+        padding: 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        background: #f9fafb;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        background: white;
+    }
+
+    .form-control:hover {
+        border-color: #d1d5db;
+    }
+
+    .form-text {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-text i {
+        color: #10b981;
+    }
+
+    /* Image Preview */
+    .image-preview-container {
+        margin-top: 1rem;
+    }
+
+    .image-preview {
+        width: 150px;
+        height: 150px;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .image-preview.has-image {
+        border-color: #10b981;
+        background: white;
+    }
+
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .image-placeholder {
+        text-align: center;
+        color: #9ca3af;
+    }
+
+    .image-placeholder i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    /* Change Summary */
+    .changes-summary {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .changes-title {
+        font-weight: 600;
+        color: #166534;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .changes-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .changes-list li {
+        color: #166534;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .changes-list li i {
+        font-size: 0.75rem;
+        color: #10b981;
+    }
+
+    /* Action Buttons */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 2rem;
+    }
+
+    .btn-warning-custom {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 160px;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .btn-warning-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        background: white;
+        color: #64748b;
+        border: 2px solid #e5e7eb;
+        padding: 12px 32px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-secondary-custom:hover {
+        border-color: #d1d5db;
+        color: #374151;
+        transform: translateY(-1px);
+    }
+
+    .btn-danger-custom {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-danger-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        color: white;
+    }
+
+    /* Success/Error Messages */
+    .alert-custom {
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .alert-success-custom {
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        color: #065f46;
+        border-left: 4px solid #10b981;
+    }
+
+    .alert-error-custom {
+        background: linear-gradient(135deg, #fef2f2, #fecaca);
+        color: #991b1b;
+        border-left: 4px solid #ef4444;
+    }
+
+    /* Loading States */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Form Validation */
+    .form-control.is-valid {
+        border-color: #10b981;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='m2.3 6.73.8-.77L4 4.86l.9 1.1.8.77-1.6 1.6L2.3 6.73z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+    }
+
+    .form-control.is-invalid {
+        border-color: #ef4444;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='M5.8 4.6L6.2 7.4M6 8.8v.01'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+    }
+
+    .form-control.changed {
+        border-color: #f59e0b;
+        background-color: #fffbeb;
+    }
+
+    /* Update Tips */
+    .update-tips {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 1px solid #93c5fd;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .update-tips-title {
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .update-tips-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .update-tips-list li {
+        color: #1e40af;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .update-tips-list li i {
+        font-size: 0.75rem;
+        color: #10b981;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-body {
+            padding: 1.5rem;
+        }
+        
+        .form-header {
+            padding: 1.5rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .btn-warning-custom,
+        .btn-secondary-custom,
+        .btn-danger-custom {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .product-info-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .product-current-details {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+        
+        .form-container {
+            padding: 1rem 0;
+        }
+
+        .current-image,
+        .current-image-placeholder {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Update Product ✏️</h1>
+                    <p class="page-subtitle">Modify your product information and inventory</p>
+                </div>
+                <div class="col-md-4">
+                    <nav class="breadcrumb-nav">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('seller_dashboard') }}">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('seller_manage_products') }}">Products</a>
+                            </li>
+                            <li class="breadcrumb-item active">Update</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Container -->
+<div class="container">
+    <div class="form-container">
+        <div class="form-card">
+            <!-- Form Header -->
+            <div class="form-header">
+                <div class="form-header-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h2 class="form-title">Update Product Information</h2>
+                <p class="form-subtitle">Make changes to your product details and save updates</p>
+            </div>
+
+            <!-- Form Body -->
+            <div class="form-body">
+                <!-- Success/Error Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert-custom {{ 'alert-success-custom' if category == 'success' else 'alert-error-custom' }}">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Current Product Info -->
+                <div class="product-info-card">
+                    <div class="product-info-header">
+                        {% if product.image %}
+                            <img src="{{ product.image }}" alt="{{ product.name }}" class="current-image">
+                        {% else %}
+                            <div class="current-image-placeholder">
+                                <i class="fas fa-image fa-2x"></i>
+                            </div>
+                        {% endif %}
+                        <div class="product-current-info">
+                            <div class="product-current-name">{{ product.name }}</div>
+                            <div class="product-current-details">
+                                <div class="product-current-price">${{ "%.2f"|format(product.price) }}</div>
+                                <div class="product-current-stock">{{ product.stock }} in stock</div>
+                                <div>ID: #{{ product.id }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if product.description %}
+                    <div style="color: #1e40af; font-size: 0.9rem; font-style: italic;">
+                        "{{ product.description[:100] }}{% if product.description|length > 100 %}..."{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="POST" id="updateProductForm">
+                    <!-- Product Name -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-tag"></i> Product Name
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="name" 
+                               name="name" 
+                               value="{{ product.name }}"
+                               data-original="{{ product.name }}"
+                               placeholder="Enter product name"
+                               required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Update the product name to better attract customers
+                        </div>
+                    </div>
+
+                    <!-- Product Price -->
+                    <div class="form-group">
+                        <label for="price" class="form-label">
+                            <i class="fas fa-dollar-sign"></i> Price
+                        </label>
+                        <input type="number" 
+                               step="0.01" 
+                               min="0.01"
+                               class="form-control" 
+                               id="price" 
+                               name="price" 
+                               value="{{ product.price }}"
+                               data-original="{{ product.price }}"
+                               placeholder="0.00"
+                               required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Current price: ${{ "%.2f"|format(product.price) }} - Adjust based on market conditions
+                        </div>
+                    </div>
+
+                    <!-- Stock Quantity -->
+                    <div class="form-group">
+                        <label for="stock" class="form-label">
+                            <i class="fas fa-boxes"></i> Stock Quantity
+                        </label>
+                        <input type="number" 
+                               min="0"
+                               class="form-control" 
+                               id="stock" 
+                               name="stock" 
+                               value="{{ product.stock }}"
+                               data-original="{{ product.stock }}"
+                               placeholder="Enter available quantity"
+                               required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Current stock: {{ product.stock }} units - {% if product.stock < 5 %}⚠️ Low stock warning{% elif product.stock < 20 %}Consider restocking soon{% else %}Good stock level{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="form-group">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea class="form-control" 
+                                  id="description" 
+                                  name="description" 
+                                  rows="4"
+                                  data-original="{{ product.description or '' }}"
+                                  placeholder="Describe your product features, benefits, and specifications...">{{ product.description or '' }}</textarea>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            {% if product.description %}Current description has {{ product.description|length }} characters{% else %}No description set - add one to improve sales{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Product Image -->
+                    <div class="form-group">
+                        <label for="image" class="form-label">
+                            <i class="fas fa-image"></i> Product Image
+                        </label>
+                        <input type="url" 
+                               class="form-control" 
+                               id="image" 
+                               name="image" 
+                               value="{{ product.image or '' }}"
+                               data-original="{{ product.image or '' }}"
+                               placeholder="https://example.com/image.jpg">
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Update the product image URL - leave empty to keep current image
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div class="image-preview-container">
+                            <div class="image-preview" id="imagePreview">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="Preview">
+                                {% else %}
+                                    <div class="image-placeholder">
+                                        <i class="fas fa-image"></i>
+                                        <div>Image Preview</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Changes Summary -->
+                    <div class="changes-summary" id="changesSummary" style="display: none;">
+                        <div class="changes-title">
+                            <i class="fas fa-edit"></i>
+                            Pending Changes
+                        </div>
+                        <ul class="changes-list" id="changesList">
+                        </ul>
+                    </div>
+
+                    <!-- Update Tips -->
+                    <div class="update-tips">
+                        <div class="update-tips-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Tips for Updating Products
+                        </div>
+                        <ul class="update-tips-list">
+                            <li><i class="fas fa-check"></i> Regular price updates help maintain competitiveness</li>
+                            <li><i class="fas fa-check"></i> Update stock levels frequently to avoid overselling</li>
+                            <li><i class="fas fa-check"></i> Improve descriptions based on customer feedback</li>
+                            <li><i class="fas fa-check"></i> High-quality images can increase conversion rates</li>
+                            <li><i class="fas fa-check"></i> Monitor inventory levels and restock popular items</li>
+                        </ul>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{{ url_for('seller_manage_products') }}" 
+                           class="btn-secondary-custom">
+                            <i class="fas fa-arrow-left"></i> Back to Products
+                        </a>
+                        <a href="{{ url_for('seller_dashboard') }}" 
+                           class="btn-secondary-custom">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <button type="submit" class="btn-warning-custom" id="submitBtn">
+                            <i class="fas fa-save"></i> Update Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form enhancement and change tracking
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('updateProductForm');
+    const nameInput = document.getElementById('name');
+    const priceInput = document.getElementById('price');
+    const stockInput = document.getElementById('stock');
+    const descriptionInput = document.getElementById('description');
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const changesSummary = document.getElementById('changesSummary');
+    const changesList = document.getElementById('changesList');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const inputs = [nameInput, priceInput, stockInput, descriptionInput, imageInput];
+    let hasChanges = false;
+
+    // Track changes and highlight modified fields
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            trackChanges();
+            validateField(this);
+        });
+        
+        // Initial validation
+        validateField(input);
+    });
+
+    // Image preview functionality
+    imageInput.addEventListener('input', function() {
+        const url = this.value.trim();
+        if (url && isValidUrl(url)) {
+            loadImagePreview(url);
+        } else if (!url) {
+            // If empty, show original image or placeholder
+            const originalImage = this.getAttribute('data-original');
+            if (originalImage) {
+                loadImagePreview(originalImage);
+            } else {
+                resetImagePreview();
+            }
+        } else {
+            resetImagePreview();
+        }
+    });
+
+    function trackChanges() {
+        const changes = [];
+        hasChanges = false;
+
+        inputs.forEach(input => {
+            const currentValue = input.value.trim();
+            const originalValue = input.getAttribute('data-original').trim();
+            
+            if (currentValue !== originalValue) {
+                hasChanges = true;
+                input.classList.add('changed');
+                
+                const fieldName = input.getAttribute('name');
+                const fieldLabel = getFieldLabel(fieldName);
+                changes.push({
+                    field: fieldLabel,
+                    from: originalValue || 'Empty',
+                    to: currentValue || 'Empty'
+                });
+            } else {
+                input.classList.remove('changed');
+            }
+        });
+
+        updateChangesSummary(changes);
+        updateSubmitButton();
+    }
+
+    function getFieldLabel(fieldName) {
+        const labels = {
+            'name': 'Product Name',
+            'price': 'Price',
+            'stock': 'Stock Quantity',
+            'description': 'Description',
+            'image': 'Image URL'
+        };
+        return labels[fieldName] || fieldName;
+    }
+
+    function updateChangesSummary(changes) {
+        if (changes.length > 0) {
+            changesSummary.style.display = 'block';
+            changesList.innerHTML = changes.map(change => 
+                `<li><i class="fas fa-arrow-right"></i> ${change.field}: "${change.from}" → "${change.to}"</li>`
+            ).join('');
+        } else {
+            changesSummary.style.display = 'none';
+        }
+    }
+
+    function updateSubmitButton() {
+        if (hasChanges) {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            submitBtn.classList.remove('btn-warning-custom');
+            submitBtn.classList.add('btn-success-custom');
+            submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        } else {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
+            submitBtn.classList.remove('btn-success-custom');
+            submitBtn.classList.add('btn-warning-custom');
+            submitBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        }
+    }
+
+    function validateField(input) {
+        const value = input.value.trim();
+        
+        switch(input.name) {
+            case 'name':
+                if (value.length >= 3) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove

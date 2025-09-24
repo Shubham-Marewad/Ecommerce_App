@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - E-Shop</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-panel {
+            background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('<viewBox="0 0 100 100"><defs><width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-10px) translateY(-10px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            position: relative;
+            max-width: 500px;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-image {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            background: url('<defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0.05"/></linearGradient></defs><circle cx="120" cy="150" r="60" fill="%23f4a261" opacity="0.8"/><circle cx="280" cy="180" r="40" fill="%23e76f51" opacity="0.7"/><rect x="100" y="250" width="200" height="80" rx="40" fill="%23264653" opacity="0.6"/><circle cx="200" cy="200" r="80" fill="url(%23bg)" stroke="%23ffffff" stroke-width="2"/><text x="200" y="210" text-anchor="middle" fill="%23ffffff" font-family="Arial" font-size="16">Dashboard</text></svg>') center/contain no-repeat;
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .brand-icon i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .brand-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1e5dff;
+            box-shadow: 0 0 0 3px rgba(30, 93, 255, 0.1);
+            background: white;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(30, 93, 255, 0.3);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password a {
+            color: #1e5dff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #64748b;
+        }
+
+        .signup-link a {
+            color: #1e5dff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                flex: 0 0 40%;
+                min-height: 40vh;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .right-panel {
+                flex: 1;
+            }
+            
+            .login-form-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Panel - Hero Section -->
+        <div class="left-panel">
+            <div class="hero-content">
+                <h1>Your style, your choices 
+                    just a login away</h1>
+                <p>Your wishlist is waiting</p>
+                <div class="hero-image"></div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Login Form -->
+        <div class="right-panel">
+            <div class="login-form-container">
+                <!-- Brand Header -->
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="brand-name">Nova Mart</div>
+                </div>
+
+                <!-- Welcome Section -->
+                <h1 class="welcome-title">Welcome </h1>
+                <p class="welcome-subtitle">Please enter your credentials </p>
+
+                <!-- Error Alert (if needed) -->
+                <!-- <div class="alert alert-danger">Invalid email or password</div> -->
+
+                <!-- Login Form -->
+                <form method="POST" action="{{ url_for('login') if url_for is defined else '#' }}">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email address</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Enter your email address"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="password-field">
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                required
+                            >
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="far fa-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+
+                <!-- Forgot Password -->
+                <div class="forgot-password">
+                    <a href="#">Forgot your password?</a>
+                </div>
+
+                <!-- Signup Link -->
+                <div class="signup-link">
+                    Don't have an account? <a href="{{ url_for('register') if url_for is defined else '#' }}">Sign up here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'far fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'far fa-eye';
+            }
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const formInputs = document.querySelectorAll('.form-control');
+            
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (this.value === '') {
+                        this.parentElement.classList.remove('focused');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

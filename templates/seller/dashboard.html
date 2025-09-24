@@ -1,0 +1,821 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.5;
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .welcome-message {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    /* Quick Stats Cards */
+    .stats-section {
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card.primary::before {
+        --gradient: linear-gradient(135deg, #1e5dff, #4285f4);
+    }
+
+    .stat-card.success::before {
+        --gradient: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stat-card.warning::before {
+        --gradient: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .stat-card.info::before {
+        --gradient: linear-gradient(135deg, #06b6d4, #0891b2);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stat-card.primary .stat-icon {
+        background: linear-gradient(135deg, #1e5dff, #4285f4);
+    }
+
+    .stat-card.success .stat-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stat-card.warning .stat-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .stat-card.info .stat-icon {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+    }
+
+    .stat-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .stat-change.positive {
+        color: #10b981;
+    }
+
+    .stat-change.negative {
+        color: #ef4444;
+    }
+
+    /* Action Buttons */
+    .actions-section {
+        margin-bottom: 3rem;
+    }
+
+    .action-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-custom {
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s;
+        border: none;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 150px;
+        justify-content: center;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #1e5dff, #4285f4);
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(30, 93, 255, 0.3);
+        color: white;
+    }
+
+    .btn-success-custom {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-success-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        color: white;
+    }
+
+    .btn-info-custom {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+    }
+
+    .btn-info-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+        color: white;
+    }
+
+    /* Data Tables */
+    .data-section {
+        margin-bottom: 2rem;
+    }
+
+    .data-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        overflow: hidden;
+    }
+
+    .data-card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: between;
+    }
+
+    .data-card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .data-card-title i {
+        color: #1e5dff;
+    }
+
+    .data-card-body {
+        padding: 0;
+    }
+
+    .custom-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .custom-table thead th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #374151;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    .custom-table tbody td {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .custom-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    /* Badges */
+    .badge-custom {
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        color: #065f46;
+    }
+
+    .badge-danger {
+        background: linear-gradient(135deg, #fef2f2, #fecaca);
+        color: #991b1b;
+    }
+
+    .badge-warning {
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        color: #92400e;
+    }
+
+    .badge-info {
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        color: #0c4a6e;
+    }
+
+    /* Action Buttons in Tables */
+    .btn-table {
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.8rem;
+        border: none;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        color: white;
+    }
+
+    .btn-view {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+    }
+
+    .btn-view:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #cbd5e1;
+    }
+
+    .empty-state h4 {
+        margin-bottom: 0.5rem;
+        color: #475569;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-custom {
+            width: 100%;
+        }
+
+        .welcome-message {
+            font-size: 1.8rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
+
+        .custom-table {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-header {
+            padding: 1.5rem 0;
+        }
+
+        .stat-card, .action-card, .data-card {
+            margin-bottom: 1rem;
+        }
+
+        .custom-table thead {
+            display: none;
+        }
+
+        .custom-table tbody td {
+            display: block;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .custom-table tbody td:first-child {
+            padding-top: 1rem;
+            font-weight: 600;
+        }
+
+        .custom-table tbody td:last-child {
+            padding-bottom: 1rem;
+        }
+
+        .custom-table tbody tr {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+    }
+
+    /* Progress Indicators */
+    .progress-bar {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #10b981, #059669);
+        transition: width 0.3s ease;
+    }
+
+    /* Recent Activity */
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex-grow: 1;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="welcome-message">Welcome back, {{ shop_name }}! 👋</h1>
+                    <p class="welcome-subtitle">Here's what's happening with your store today</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="text-white-50">
+                        <i class="fas fa-calendar me-1"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Quick Stats -->
+    <div class="stats-section">
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-title">Total Products</div>
+                    <div class="stat-value">{{ products|length }}</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Active listings</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-title">Total Orders</div>
+                    <div class="stat-value">{{ orders|length }}</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>All time orders</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-title">Low Stock Items</div>
+                    <div class="stat-value">{{ products|selectattr('stock', 'lt', 5)|list|length }}</div>
+                    <div class="stat-change {% if products|selectattr('stock', 'lt', 5)|list|length > 0 %}negative{% else %}positive{% endif %}">
+                        <i class="fas fa-{% if products|selectattr('stock', 'lt', 5)|list|length > 0 %}arrow-down{% else %}check{% endif %}"></i>
+                        <span>{% if products|selectattr('stock', 'lt', 5)|list|length > 0 %}Needs attention{% else %}All good{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-title">Revenue Today</div>
+                    <div class="stat-value">$0</div>
+                    <div class="stat-change">
+                        <i class="fas fa-minus"></i>
+                        <span>No sales today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+        <div class="action-card">
+            <h4 class="mb-3">
+                <i class="fas fa-bolt text-warning me-2"></i>
+                Quick Actions
+            </h4>
+            <div class="action-buttons">
+                <a href="{{ url_for('seller_add_product') }}" class="btn-custom btn-success-custom">
+                    <i class="fas fa-plus"></i>
+                    Add New Product
+                </a>
+                <a href="{{ url_for('seller_manage_products') }}" class="btn-custom btn-primary-custom">
+                    <i class="fas fa-edit"></i>
+                    Manage Products
+                </a>
+                <a href="#" class="btn-custom btn-info-custom">
+                    <i class="fas fa-chart-line"></i>
+                    View Analytics
+                </a>
+                <a href="#" class="btn-custom btn-primary-custom">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Tables -->
+    <div class="row">
+        <!-- Products Table -->
+        <div class="col-lg-6">
+            <div class="data-section">
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <h4 class="data-card-title">
+                            <i class="fas fa-boxes"></i>
+                            Your Products
+                        </h4>
+                    </div>
+                    <div class="data-card-body">
+                        {% if products %}
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products[:5] %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if product.image %}
+                                            <img src="{{ product.image }}" alt="{{ product.name }}" 
+                                                 style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">
+                                            {% else %}
+                                            <div style="width: 40px; height: 40px; background: #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <div style="font-weight: 600; color: #1a202c;">{{ product.name }}</div>
+                                                {% if product.description %}
+                                                <div style="font-size: 0.8rem; color: #64748b;">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 600; color: #059669;">${{ "%.2f"|format(product.price) }}</span>
+                                    </td>
+                                    <td>
+                                        {% if product.stock < 5 %}
+                                            <span class="badge-custom badge-danger">{{ product.stock }}</span>
+                                        {% elif product.stock < 20 %}
+                                            <span class="badge-custom badge-warning">{{ product.stock }}</span>
+                                        {% else %}
+                                            <span class="badge-custom badge-success">{{ product.stock }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('seller_update_product', product_id=product.id) }}" 
+                                           class="btn-table btn-edit">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if products|length > 5 %}
+                        <div class="text-center p-3 border-top">
+                            <a href="{{ url_for('seller_manage_products') }}" class="btn-custom btn-primary-custom">
+                                View All Products ({{ products|length }})
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h4>No Products Yet</h4>
+                            <p>Start by adding your first product to get started!</p>
+                            <a href="{{ url_for('seller_add_product') }}" class="btn-custom btn-success-custom mt-2">
+                                <i class="fas fa-plus"></i> Add Your First Product
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="col-lg-6">
+            <div class="data-section">
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <h4 class="data-card-title">
+                            <i class="fas fa-receipt"></i>
+                            Recent Orders
+                        </h4>
+                    </div>
+                    <div class="data-card-body">
+                        {% if orders %}
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders[:5] %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <div style="font-weight: 600; color: #1a202c;">{{ order.username }}</div>
+                                            <div style="font-size: 0.8rem; color: #64748b;">Customer</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 500; color: #374151;">{{ order.name }}</div>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: 600; color: #059669;">${{ "%.2f"|format(order.price) }}</span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div style="font-weight: 500; color: #374151;">{{ order.order_date[:10] }}</div>
+                                            <div style="font-size: 0.8rem; color: #64748b;">{{ order.order_date[11:16] }}</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if orders|length > 5 %}
+                        <div class="text-center p-3 border-top">
+                            <a href="#" class="btn-custom btn-info-custom">
+                                View All Orders ({{ orders|length }})
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h4>No Orders Yet</h4>
+                            <p>Orders will appear here once customers start purchasing your products.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity (if you want to add this section) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h4 class="data-card-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Activity
+                    </h4>
+                </div>
+                <div class="data-card-body">
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Welcome to your seller dashboard!</div>
+                            <div class="activity-time">Get started by adding your first product</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update current date
+document.addEventListener('DOMContentLoaded', function() {
+    const dateElement = document.getElementById('currentDate');
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    dateElement.textContent = now.toLocaleDateString('en-US', options);
+
+    // Add some interactive enhancements
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Animate stat values on page load
+    const statValues = document.querySelectorAll('.stat-value');
+    statValues.forEach(stat => {
+        const finalValue = parseInt(stat.textContent);
+        if (!isNaN(finalValue) && finalValue > 0) {
+            let currentValue = 0;
+            const increment = Math.ceil(finalValue / 20);
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    currentValue = finalValue;
+                    clearInterval(timer);
+                }
+                stat.textContent = currentValue;
+            }, 50);
+        }
+    });
+});
+</script>
+{% endblock %}

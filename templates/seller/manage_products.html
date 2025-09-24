@@ -1,0 +1,932 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Products{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.5;
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .breadcrumb-nav {
+        margin-top: 1rem;
+    }
+
+    .breadcrumb {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0;
+    }
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: white;
+    }
+
+    /* Main Container */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Toolbar */
+    .toolbar {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-grow: 1;
+    }
+
+    .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .search-box {
+        position: relative;
+        flex-grow: 1;
+        max-width: 400px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        background: #f9fafb;
+        transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: #1e5dff;
+        box-shadow: 0 0 0 3px rgba(30, 93, 255, 0.1);
+        background: white;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+    }
+
+    .filter-select {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        background: #f9fafb;
+        font-size: 0.95rem;
+        min-width: 150px;
+        transition: all 0.2s;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #1e5dff;
+        box-shadow: 0 0 0 3px rgba(30, 93, 255, 0.1);
+        background: white;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #1e5dff, #4285f4);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(30, 93, 255, 0.3);
+        color: white;
+    }
+
+    .btn-success-custom {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .btn-success-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        color: white;
+    }
+
+    /* Products Grid/Table Container */
+    .products-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .products-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .products-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .products-title i {
+        color: #1e5dff;
+    }
+
+    .view-toggle {
+        display: flex;
+        background: white;
+        border-radius: 10px;
+        padding: 0.25rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .view-toggle button {
+        padding: 0.5rem 0.75rem;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        transition: all 0.2s;
+        color: #64748b;
+    }
+
+    .view-toggle button.active {
+        background: #1e5dff;
+        color: white;
+    }
+
+    /* Table View */
+    .products-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .products-table thead th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #374151;
+        border: none;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+
+    .products-table tbody td {
+        padding: 1.5rem 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .products-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .product-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 2px solid #f1f5f9;
+    }
+
+    .product-image-placeholder {
+        width: 60px;
+        height: 60px;
+        background: #e2e8f0;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        border: 2px solid #f1f5f9;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-category {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .product-price {
+        font-weight: 700;
+        color: #059669;
+        font-size: 1.1rem;
+    }
+
+    .product-description {
+        color: #64748b;
+        line-height: 1.4;
+        max-width: 300px;
+    }
+
+    /* Stock Badges */
+    .stock-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .stock-badge.high {
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        color: #065f46;
+    }
+
+    .stock-badge.medium {
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        color: #92400e;
+    }
+
+    .stock-badge.low {
+        background: linear-gradient(135deg, #fef2f2, #fecaca);
+        color: #991b1b;
+    }
+
+    .stock-badge.out {
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        color: #374151;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .btn-action {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.8rem;
+        border: none;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        color: white;
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        color: white;
+    }
+
+    .btn-view {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+    }
+
+    .btn-view:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        color: white;
+    }
+
+    /* Grid View */
+    .products-grid {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s;
+        border: 1px solid #f1f5f9;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-card-image {
+        height: 200px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .product-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-card-content {
+        padding: 1.5rem;
+    }
+
+    .product-card-header {
+        display: flex;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+    }
+
+    .product-card-name {
+        font-weight: 700;
+        color: #1a202c;
+        font-size: 1.1rem;
+        line-height: 1.3;
+    }
+
+    .product-card-price {
+        font-weight: 700;
+        color: #059669;
+        font-size: 1.2rem;
+    }
+
+    .product-card-description {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+
+    .product-card-footer {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #cbd5e1;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 0.5rem;
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        margin-bottom: 2rem;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Loading States */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .toolbar-left,
+        .toolbar-right {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .search-box {
+            max-width: none;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+            padding: 1rem;
+        }
+
+        .products-table {
+            font-size: 0.9rem;
+        }
+
+        .products-table thead {
+            display: none;
+        }
+
+        .products-table tbody td {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .products-table tbody td:first-child {
+            padding-top: 1rem;
+            font-weight: 600;
+        }
+
+        .products-table tbody td:last-child {
+            padding-bottom: 1rem;
+        }
+
+        .products-table tbody tr {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .main-container {
+            padding: 0 0.5rem;
+        }
+
+        .toolbar {
+            padding: 1rem;
+        }
+
+        .products-header {
+            padding: 1rem;
+        }
+
+        .btn-action {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+        }
+    }
+
+    /* Confirmation Modal */
+    .modal-custom {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+    }
+
+    .modal-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #fef2f2, #fecaca);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: #dc2626;
+        font-size: 1.5rem;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-text {
+        color: #64748b;
+        margin-bottom: 2rem;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn-modal {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    .btn-cancel:hover {
+        background: #e2e8f0;
+    }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .btn-confirm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Manage Products 📦</h1>
+                    <p class="page-subtitle">View, edit, and organize your product inventory</p>
+                </div>
+                <div class="col-md-4">
+                    <nav class="breadcrumb-nav">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('seller_dashboard') }}">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item active">Manage Products</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search products..." id="searchInput">
+            </div>
+            <select class="filter-select" id="stockFilter">
+                <option value="">All Stock Levels</option>
+                <option value="high">High Stock (20+)</option>
+                <option value="medium">Medium Stock (10-19)</option>
+                <option value="low">Low Stock (1-9)</option>
+                <option value="out">Out of Stock</option>
+            </select>
+        </div>
+        <div class="toolbar-right">
+            <div class="view-toggle">
+                <button onclick="toggleView('table')" id="tableViewBtn" class="active">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button onclick="toggleView('grid')" id="gridViewBtn">
+                    <i class="fas fa-th-large"></i>
+                </button>
+            </div>
+            <a href="{{ url_for('seller_add_product') }}" class="btn-success-custom">
+                <i class="fas fa-plus"></i>
+                Add Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Products Container -->
+    <div class="products-container">
+        <div class="products-header">
+            <h3 class="products-title">
+                <i class="fas fa-boxes"></i>
+                Your Products ({{ products|length }})
+            </h3>
+            <div class="text-sm text-muted">
+                Total inventory value: ${{ "%.2f"|format(products|sum(attribute='price') or 0) }}
+            </div>
+        </div>
+
+        {% if products %}
+            <!-- Table View -->
+            <div id="tableView">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        {% for product in products %}
+                        <tr class="product-row" data-product-name="{{ product.name.lower() }}" data-stock-level="{% if product.stock >= 20 %}high{% elif product.stock >= 10 %}medium{% elif product.stock > 0 %}low{% else %}out{% endif %}">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if product.image %}
+                                        <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                                    {% else %}
+                                        <div class="product-image-placeholder">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <div class="product-category">Product ID: #{{ product.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                            </td>
+                            <td>
+                                {% if product.stock >= 20 %}
+                                    <span class="stock-badge high">
+                                        <i class="fas fa-check-circle"></i>
+                                        {{ product.stock }}
+                                    </span>
+                                {% elif product.stock >= 10 %}
+                                    <span class="stock-badge medium">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ product.stock }}
+                                    </span>
+                                {% elif product.stock > 0 %}
+                                    <span class="stock-badge low">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ product.stock }}
+                                    </span>
+                                {% else %}
+                                    <span class="stock-badge out">
+                                        <i class="fas fa-times-circle"></i>
+                                        Out of Stock
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="product-description">
+                                    {% if product.description %}
+                                        {{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}
+                                    {% else %}
+                                        <span class="text-muted">No description available</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="#" class="btn-action btn-view" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('seller_update_product', product_id=product.id) }}" 
+                                       class="btn-action btn-edit" title="Edit Product">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="showDeleteModal({{ product.id }}, '{{ product.name }}')" 
+                                            class="btn-action btn-delete" title="Delete Product">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Grid View -->
+            <div id="gridView" style="display: none;">
+                <div class="products-grid" id="productsGrid">
+                    {% for product in products %}
+                    <div class="product-card" data-product-name="{{ product.name.lower() }}" data-stock-level="{% if product.stock >= 20 %}high{% elif product.stock >= 10 %}medium{% elif product.stock > 0 %}low{% else %}out{% endif %}">
+                        <div class="product-card-image">
+                            {% if product.image %}
+                                <img src="{{ product.image }}" alt="{{ product.name }}">
+                            {% else %}
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            {% endif %}
+                        </div>
+                        <div class="product-card-content">
+                            <div class="product-card-header">
+                                <div class="product-card-name">{{ product.name }}</div>
+                                <div class="product-card-price">${{ "%.2f"|format(product.price) }}</div>
+                            </div>
+                            {% if product.description %}
+                            <div class="product-card-description">
+                                {{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}
+                            </div>
+                            {% endif %}
+                            <div class="product-card-footer">
+                                {% if product.stock >= 20 %}
+                                    <span class="stock-badge high">
+                                        <i class="fas fa-check-circle"></i>
+                                        {{ product.stock }} in stock
+                                    </span>
+                                {% elif product.stock >= 10 %}
+                                    <span class="stock-badge medium">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ product.stock }} in stock
+                                    </span>
+                                {% elif product.stock > 0 %}
+                                    <span class="stock-badge low">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ product.stock }} left
+                                    </span>
+                                {% else %}
+                                    <span class="stock-badge out">
+                                        <i class="fas fa-times-circle"></i>
+                                        Out of Stock
+                                    </span>
+                                {% endif %}
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('seller_update_product', product_id=product.id) }}" 
+                                       class="btn-action btn-edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="showDeleteModal({{ product.id }}, '{{ product.name }}')" 
+                                            class="btn-action btn-delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <h3>No Products Yet</h3>
+                <p>You haven't added any products to your inventory yet. Start building your product catalog by adding your first item.</p>
+                <a href="{{ url_for('seller_add_product') }}" class="btn-success-custom">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Product
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-custom">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <i class="fas fa-trash"></i>
+        </div>
+        <h3 class="modal-title">Delete Product</h3>
+        <p class="modal-text" id="deleteModalText">

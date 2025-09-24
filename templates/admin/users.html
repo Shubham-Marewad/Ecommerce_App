@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users - Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .brand-icon i {
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #1e5dff;
+            background: rgba(30, 93, 255, 0.1);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .header-stat {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            flex: 1;
+            transition: transform 0.2s;
+        }
+
+        .header-stat:hover {
+            transform: translateY(-2px);
+        }
+
+        .header-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-stat-label {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Search & Filter Section */
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1.5rem;
+            align-items: end;
+        }
+
+        .search-group {
+            position: relative;
+        }
+
+        .search-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e5dff;
+            box-shadow: 0 0 0 3px rgba(30, 93, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .add-user-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .add-user-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        .export-btn {
+            background: white;
+            color: #64748b;
+            border: 2px solid #e5e7eb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            border-color: #d1d5db;
+            color: #374151;
+        }
+
+        /* Users Container */
+        .users-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .users-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .users-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .users-count {
+            background: #1e5dff;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Modern Table */
+        .modern-table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .modern-table thead th {
+            background: none;
+            border: none;
+            padding: 1.5rem 2rem;
+            font-weight: 700;
+            color: #374151;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .modern-table tbody td {
+            padding: 1.5rem 2rem;
+            border: none;
+            border-top: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .modern-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .modern-table tbody tr:hover {
+            background: #f8fafc;
+            transform: scale(1.001);
+        }
+
+        /* User Info Styles */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .user-avatar.admin {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .user-avatar.user {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 16px;
+            height: 16px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-weight: 600;
+            color: #1a202c;
+            font-size: 1rem;
+        }
+
+        .user-details small {
+            color: #64748b;
+        }
+
+        .user-id {
+            font-family: 'Courier New', monospace;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+
+        .email-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .email-address {
+            color: #1e5dff;
+            font-weight: 500;
+        }
+
+        .email-verified {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #10b981;
+        }
+
+        .role-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .role-user {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 1px solid #34d399;
+        }
+
+        .role-moderator {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            border: 1px solid #60a5fa;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-view {
+            background: #eff6ff;
+            color: #1e5dff;
+        }
+
+        .btn-view:hover {
+            background: #1e5dff;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .btn-edit:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #1e5dff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .quick-actions-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-item {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            text-decoration: none;
+            color: #374151;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .action-item:hover {
+            border-color: #1e5dff;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color: #1e5dff;
+            transform: translateY(-2px);
+        }
+
+        .action-item i {
+            font-size: 1.25rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            .header-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .search-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .users-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            /* Mobile table - convert to cards */
+            .modern-table thead {
+                display: none;
+            }
+            
+            .modern-table tbody tr {
+                display: block;
+                background: #f8fafc;
+                border-radius: 12px;
+                margin-bottom: 1rem;
+                padding: 1rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            .modern-table tbody td {
+                display: block;
+                padding: 0.5rem 0;
+                border: none;
+                border-top: none;
+            }
+            
+            .modern-table tbody td:before {
+                content: attr(data-label) ": ";
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .search-section,
+            .users-container,
+            .quick-actions {
+                margin-left: -15px;
+                margin-right: -15px;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="brand-name">DN Spurt</div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="{{ url_for('admin_dashboard') if url_for is defined else '#' }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                    </a>
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-users me-1"></i> Users
+                    </a>
+                    <a href="{{ url_for('logout') if url_for is defined else '#' }}" class="nav-link">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">User Management 👥</h1>
+                        <p class="page-subtitle">Manage and monitor all registered users on your platform</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="header-stats">
+                            <div class="header-stat">
+                                <span class="header-stat-number">{{ users|length if users else 0 }}</span>
+                                <div class="header-stat-label">Total Users</div>
+                            </div>
+                            <div class="header-stat">
+                                <span class="header-stat-number">{{ users|selectattr('role', 'equalto', 'admin')|list|length if users else 0 }}</span>
+                                <div class="header-stat-label">Admins</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h5 class="quick-actions-title">
+                <i class="fas fa-bolt"></i> Quick Actions
+            </h5>
+            <div class="action-grid">
+                <a href="#" class="action-item">
+                    <i class="fas fa-user-plus"></i>
+                    <div>
+                        <strong>Add New User</strong>
+                        <br><small>Create a new user account</small>
+                    </div>
+                </a>
+                <a href="#" class="action-item">
+                    <i class="fas fa-upload"></i>
+                    <div>
+                        <strong>Import Users</strong>
+                        <br><small>Bulk import from CSV</small>
+                    </div>
+                </a>
+                <a href="#" class="action-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>User Permissions</strong>
+                        <br><small>Manage user roles</small>
+                    </div>
+                </a>
+                <a href="#" class="action-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <div>
+                        <strong>User Analytics</strong>
+                        <br><small>View user statistics</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Search & Filter Section -->
+        <div class="search-section">
+            <h5 class="search-title">
+                <i class="fas fa-search"></i> Search & Filter Users
+            </h5>
+            <div class="search-row">
+                <div class="search-group">
+                    <label for="userSearch">Search Users</label>
+                    <div class="position-relative">
+                        <input type="text" 
+                               class="search-input" 
+                               id="userSearch" 
+                               placeholder="Search by name, email, or role..."
+                               onkeyup="searchUsers()">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+                <a href="#" class="add-user-btn">
+                    <i class="fas fa-plus"></i> Add User
+                </a>
+                <button class="export-btn" onclick="exportUsers()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Users Container -->
+        <div class="users-container">
+            <div class="users-header">
+                <h3 class="users-title">
+                    <i class="fas fa-users"></i> Registered Users
+                    <span class="users-count">{{ users|length if users else 0 }}</span>
+                </h3>
+            </div>
+
+            {% if users %}
+            <table class="modern-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr data-user-id="{{ user.id if user.id else loop.index }}" 
+                        data-search="{{ (user.username + ' ' + user.email + ' ' + user.role)|lower }}">
+                        <td data-label="User">
+                            <div class="user-info">
+                                <div class="user-avatar {{ user.role|lower if user.role else 'user' }}">
+                                    {{ user.username[0].upper() if user.username else 'U' }}
+                                </div>
+                                <div class="user-details">
+                                    <h6>{{ user.username or 'Unknown User' }}</h6>
+                                    <small>ID: <span class="user-id">#{{ user.id if user.id else 'USR' + (1000 + loop.index)|string }}</span></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="Email">
+                            <div class="email-info">
+                                <div class="email-address">{{ user.email or 'No email provided' }}</div>
+                                <div class="email-verified">
+                                    <i class="fas fa-check-circle"></i> Verified
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="Role">
+                            <span class="role-badge role-{{ user.role|lower if user.role else 'user' }}">
+                                <i class="fas fa-{{ 'crown' if user.role == 'admin' else 'shield-alt' if user.role == 'moderator' else 'user' }} me-1"></i>
+                                {{ user.role|title if user.role else 'User' }}
+                            </span>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge bg-success">Active</span>
+                        </td>
+                        <td data-label="Actions">
+                            <div class="action-btns">
+                                <button class="action-btn btn-view" 
+                                        onclick="viewUser({{ user.id if user.id else loop.index }})" 
+                                        title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-edit" 
+                                        onclick="editUser({{ user.id if user.id else loop.index }})" 
+                                        title="Edit User">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-delete" 
+                                        onclick="deleteUser({{ user.id if user.id else loop.index }}, '{{ user.username }}')" 
+                                        title="Delete User">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="empty-title">No Users Found</h3>
+                <p class="empty-subtitle">Users will appear here once they register on your platform</p>
+                <a href="#" class="add-user-btn">
+                    <i class="fas fa-plus me-2"></i>Add First User
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i>User Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="userDetailsContent">
+                        <!-- User details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Search functionality
+        function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const searchData = row.dataset.search;
+                if (searchData.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update count
+            const countBadge = document.querySelector('.users-count');
+            if (countBadge) {
+                countBadge.textContent = visibleCount;
+            }
+        }
+        
+        // User actions
+        function viewUser(userId) {
+            const modalContent = document.getElementById('userDetailsContent');
+            modalContent.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="loading-spinner me-2"></div>
+                    Loading user details...
+                </div>
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('userModal'));
+            modal.show();
+            
+            setTimeout(() => {
+                modalContent.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">USER INFORMATION</h6>
+                            <p><strong>User ID:</strong> #USR${1000 + userId}</p>
+                            <p><strong>Username:</strong> User Name</p>
+                            <p><strong>Email:</strong> user@example.com</p>
+                            <p><strong>Role:</strong> <span class="role-badge role-user">User</span></p>
+                            <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">

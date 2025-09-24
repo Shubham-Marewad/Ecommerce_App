@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - E-Shop</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .brand-icon i {
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .stats-row {
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 2rem 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #64748b;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #1e5dff;
+            color: white;
+            border-color: #1e5dff;
+        }
+
+        /* Product Cards */
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-body {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e5dff;
+            margin-bottom: 1rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .buy-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ef4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .wishlist-btn:hover {
+            background: white;
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .filter-buttons {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .brand-header {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1e5dff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="brand-name">DN Spurt</div>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ username[0].upper() if username else 'U' }}
+                    </div>
+                    <span class="fw-semibold text-dark">{{ username or 'User' }}</span>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="container">
+            <div class="welcome-content">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="welcome-title">Welcome back, {{ username or 'User' }}! 👋</h1>
+                        <p class="welcome-subtitle">Discover amazing products and find exactly what you're looking for.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row stats-row">
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <span class="stat-number">{{ products|length if products else 0 }}</span>
+                                    <div class="stat-label">Products</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <span class="stat-number">5★</span>
+                                    <div class="stat-label">Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="container products-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Featured Products</h2>
+                <p class="section-subtitle">Handpicked items just for you</p>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterProducts('all')">All</button>
+                <button class="filter-btn" onclick="filterProducts('electronics')">Electronics</button>
+                <button class="filter-btn" onclick="filterProducts('fashion')">Fashion</button>
+                <button class="filter-btn" onclick="filterProducts('home')">Home</button>
+            </div>
+        </div>
+
+        <div class="row" id="products-container">
+            {% if products %}
+                {% for product in products %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="product-card">
+                        <button class="wishlist-btn" onclick="toggleWishlist({{ product.id }})">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <div class="product-badge">New</div>
+                        
+                        <img src="{{ product.image }}" 
+                             class="product-image" 
+                             alt="{{ product.name }}"
+                             onerror="this.src='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\" viewBox=\"0 0 200 200\"><rect width=\"200\" height=\"200\" fill=\"%23f3f4f6\"/><text x=\"100\" y=\"100\" text-anchor=\"middle\" dy=\".3em\" fill=\"%236b7280\" font-family=\"Arial\" font-size=\"14\">No Image</text></svg>'">
+                        
+                        <div class="product-body">
+                            <h5 class="product-title">{{ product.name }}</h5>
+                            <div class="product-price">₹{{ product.price }}</div>
+                            <a href="{{ url_for('buy', product_id=product.id) if url_for is defined else '#' }}" 
+                               class="buy-btn">
+                                <i class="fas fa-shopping-bag me-2"></i>Buy Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-box-open empty-icon"></i>
+                        <h3>No Products Available</h3>
+                        <p>Check back later for new arrivals!</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Sample product data for demo (replace with your actual data)
+        const sampleProducts = [
+            {
+                id: 1,
+                name: "Wireless Bluetooth Headphones",
+                price: "2,999",
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop",
+                category: "electronics"
+            },
+            {
+                id: 2,
+                name: "Premium Cotton T-Shirt",
+                price: "899",
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=200&fit=crop",
+                category: "fashion"
+            },
+            {
+                id: 3,
+                name: "Smart Home Speaker",
+                price: "4,999",
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
+                category: "electronics"
+            },
+            {
+                id: 4,
+                name: "Decorative Table Lamp",
+                price: "1,599",
+                image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=300&h=200&fit=crop",
+                category: "home"
+            }
+        ];
+
+        // Function to filter products
+        function filterProducts(category) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Here you would typically filter the actual products
+            console.log('Filtering by category:', category);
+        }
+
+        // Function to toggle wishlist
+        function toggleWishlist(productId) {
+            const btn = event.target.closest('.wishlist-btn');
+            const icon = btn.querySelector('i');
+            
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.style.color = '#ef4444';
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                btn.style.color = '#64748b';
+            }
+            
+            console.log('Toggled wishlist for product:', productId);
+        }
+
+        // Function to handle logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Replace with your actual logout URL
+                window.location.href = '{{ url_for("logout") if url_for is defined else "/logout" }}';
+            }
+        }
+
+        // Add loading animation to buy buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buyButtons = document.querySelectorAll('.buy-btn');
+            
+            buyButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (!this.classList.contains('loading')) {
+                        this.classList.add('loading');
+                        this.innerHTML = '<div class="loading"></div> Processing...';
+                        
+                        // Simulate loading (remove this in production)
+                        setTimeout(() => {
+                            // The page will navigate, so this won't execute in real scenario
+                        }, 1000);
+                    }
+                });
+            });
+        });
+
+        // Smooth scroll for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

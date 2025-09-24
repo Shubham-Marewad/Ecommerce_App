@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .brand-icon i {
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #1e5dff;
+            background: rgba(30, 93, 255, 0.1);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #1e5dff 0%, #4285f4 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .breadcrumb-nav {
+            margin-top: 1rem;
+        }
+
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        /* Form Container */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-header-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-header-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: #64748b;
+            margin: 0;
+        }
+
+        .form-body {
+            padding: 2.5rem;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label i {
+            color: #1e5dff;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1e5dff;
+            box-shadow: 0 0 0 3px rgba(30, 93, 255, 0.1);
+            background: white;
+        }
+
+        .form-control:hover {
+            border-color: #d1d5db;
+        }
+
+        .form-text {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-text i {
+            color: #10b981;
+        }
+
+        /* Image Preview */
+        .image-preview-container {
+            margin-top: 1rem;
+        }
+
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-preview.has-image {
+            border-color: #10b981;
+            background: white;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .image-placeholder {
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        .image-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Action Buttons */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 2rem;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #1e5dff, #4285f4);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 93, 255, 0.3);
+            color: white;
+        }
+
+        .btn-secondary-custom {
+            background: white;
+            color: #64748b;
+            border: 2px solid #e5e7eb;
+            padding: 12px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary-custom:hover {
+            border-color: #d1d5db;
+            color: #374151;
+            transform: translateY(-1px);
+        }
+
+        /* Success/Error Messages */
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success-custom {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-error-custom {
+            background: linear-gradient(135deg, #fef2f2, #fecaca);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Form Validation */
+        .form-control.is-valid {
+            border-color: #10b981;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='m2.3 6.73.8-.77L4 4.86l.9 1.1.8.77-1.6 1.6L2.3 6.73z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+        }
+
+        .form-control.is-invalid {
+            border-color: #ef4444;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='M5.8 4.6L6.2 7.4M6 8.8v.01'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-body {
+                padding: 1.5rem;
+            }
+            
+            .form-header {
+                padding: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn-primary-custom,
+            .btn-secondary-custom {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-container {
+                padding: 1rem 0;
+            }
+        }
+
+        /* Advanced Features */
+        .feature-card {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px solid #93c5fd;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            color: #1e40af;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-list li i {
+            font-size: 0.75rem;
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="brand-name">DN Spurt</div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="{{ url_for('admin_dashboard') if url_for is defined else '#' }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                    </a>
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-plus me-1"></i> Add Product
+                    </a>
+                    <a href="{{ url_for('logout') if url_for is defined else '#' }}" class="nav-link">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">Add New Product 📦</h1>
+                        <p class="page-subtitle">Create a new product listing for your store</p>
+                    </div>
+                    <div class="col-md-4">
+                        <nav class="breadcrumb-nav">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url_for('admin_dashboard') if url_for is defined else '#' }}">Admin</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url_for('admin_dashboard') if url_for is defined else '#' }}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item active">Add Product</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="container">
+        <div class="form-container">
+            <div class="form-card">
+                <!-- Form Header -->
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h2 class="form-title">Product Information</h2>
+                    <p class="form-subtitle">Fill in the details below to create a new product listing</p>
+                </div>
+
+                <!-- Form Body -->
+                <div class="form-body">
+                    <!-- Success/Error Messages (if any) -->
+                    <!-- 
+                    <div class="alert-custom alert-success-custom">
+                        <i class="fas fa-check-circle"></i>
+                        Product added successfully!
+                    </div>
+                    -->
+
+                    <form method="POST" id="productForm">
+                        <!-- Product Name -->
+                        <div class="form-group">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag"></i> Product Name
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="name" 
+                                   name="name" 
+                                   placeholder="Enter product name (e.g., Wireless Bluetooth Headphones)"
+                                   required>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Choose a clear, descriptive name that customers will easily recognize
+                            </div>
+                        </div>
+
+                        <!-- Product Price -->
+                        <div class="form-group">
+                            <label for="price" class="form-label">
+                                <i class="fas fa-rupee-sign"></i> Price
+                            </label>
+                            <input type="number" 
+                                   step="0.01" 
+                                   min="0.01"
+                                   class="form-control" 
+                                   id="price" 
+                                   name="price" 
+                                   placeholder="0.00"
+                                   required>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Enter the price in Indian Rupees (₹). Decimal values are supported.
+                            </div>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="form-group">
+                            <label for="image" class="form-label">
+                                <i class="fas fa-image"></i> Product Image
+                            </label>
+                            <input type="url" 
+                                   class="form-control" 
+                                   id="image" 
+                                   name="image" 
+                                   placeholder="https://example.com/image.jpg (optional)">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Add a product image URL. Leave empty to use a default placeholder.
+                            </div>
+                            
+                            <!-- Image Preview -->
+                            <div class="image-preview-container">
+                                <div class="image-preview" id="imagePreview">
+                                    <div class="image-placeholder">
+                                        <i class="fas fa-image"></i>
+                                        <div>Image Preview</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pro Tips -->
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Pro Tips for Better Sales
+                            </div>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> Use high-quality, clear product images</li>
+                                <li><i class="fas fa-check"></i> Write descriptive, benefit-focused product names</li>
+                                <li><i class="fas fa-check"></i> Research competitor pricing for optimal rates</li>
+                                <li><i class="fas fa-check"></i> Consider seasonal demand when pricing</li>
+                            </ul>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <a href="{{ url_for('admin_dashboard') if url_for is defined else '#' }}" 
+                               class="btn-secondary-custom">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn-primary-custom" id="submitBtn">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Form validation and enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('productForm');
+            const nameInput = document.getElementById('name');
+            const priceInput = document.getElementById('price');
+            const imageInput = document.getElementById('image');
+            const imagePreview = document.getElementById('imagePreview');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Image preview functionality
+            imageInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                if (url && isValidUrl(url)) {
+                    loadImagePreview(url);
+                } else {
+                    resetImagePreview();
+                }
+            });
+
+            // Real-time validation
+            nameInput.addEventListener('input', validateName);
+            priceInput.addEventListener('input', validatePrice);
+            imageInput.addEventListener('input', validateImageUrl);
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (validateForm()) {
+                    submitForm();
+                } else {
+                    showNotification('Please fix the validation errors before submitting', 'error');
+                }
+            });
+
+            // Validation functions
+            function validateName() {
+                const value = nameInput.value.trim();
+                if (value.length >= 3) {
+                    nameInput.classList.remove('is-invalid');
+                    nameInput.classList.add('is-valid');
+                    return true;
+                } else {
+                    nameInput.classList.remove('is-valid');
+                    nameInput.classList.add('is-invalid');
+                    return false;
+                }
+            }
+
+            function validatePrice() {
+                const value = parseFloat(priceInput.value);
+                if (value > 0) {
+                    priceInput.classList.remove('is-invalid');
+                    priceInput.classList.add('is-valid');
+                    return true;
+                } else {
+                    priceInput.classList.remove('is-valid');
+                    priceInput.classList.add('is-invalid');
+                    return false;
+                }
+            }
+
+            function validateImageUrl() {
+                const value = imageInput.value.trim();
+                if (value === '' || isValidUrl(value)) {
+                    imageInput.classList.remove('is-invalid');
+                    imageInput.classList.add('is-valid');
+                    return true;
+                } else {
+                    imageInput.classList.remove('is-valid');
+                    imageInput.classList.add('is-invalid');
+                    return false;
+                }
+            }
+
+            function validateForm() {
+                const nameValid = validateName();
+                const priceValid = validatePrice();
+                const imageValid = validateImageUrl();
+                
+                return nameValid && priceValid && imageValid;
+            }
+
+            function isValidUrl(string) {
+                try {
+                    new URL(string);
+                    return string.startsWith('http://') || string.startsWith('https://');
+                } catch (_) {
+                    return false;
+                }
+            }
+
+            function loadImagePreview(url) {
+                const img = new Image();
+                img.onload = function() {
+                    imagePreview.innerHTML = `<img src="${url}" alt="Product Preview">`;
+                    imagePreview.classList.add('has-image');
+                };
+                img.onerror = function() {
+                    resetImagePreview();
+                    imageInput.classList.add('is-invalid');
+                };
+                img.src = url;
+            }
+
+            function resetImagePreview() {
+                imagePreview.innerHTML = `
+                    <div class="image-placeholder">
+                        <i class="fas fa-image"></i>
+                        <div>Image Preview</div>
+                    </div>
+                `;
+                imagePreview.classList.remove('has-image');
+            }
+
+            function submitForm() {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<div class="loading-spinner"></div> Adding Product...';
+                submitBtn.disabled = true;
+
+                // Simulate form submission delay
+                setTimeout(() => {
+                    // In real application, this would be handled by Flask
+                    form.submit();
+                }, 1000);
+            }
+
+            function showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `alert-custom alert-${type === 'success' ? 'success' : 'error'}-custom position-fixed`;
+                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    ${message}
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 4000);
+            }
+
+            // Auto-focus first input
+            nameInput.focus();
+
+            // Price formatting
+            priceInput.addEventListener('blur', function() {
+                if (this.value) {
+                    const value = parseFloat(this.value);
+                    if (!isNaN(value)) {
+                        this.value = value.toFixed(2);
+                    }
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S to save
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    if (validateForm()) {
+                        submitForm();
+                    }
+                }
+                
+                // Escape to cancel
+                if (e.key === 'Escape') {
+                    if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                        window.location.href = '{{ url_for("admin_dashboard") if url_for is defined else "#" }}';
+                    }
+                }
+            });
+
+            // Auto-save to localStorage
+            function autoSave() {
+                const formData = {
+                    name: nameInput.value,
+                    price: priceInput.value,
+                    image: imageInput.value,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('productFormDraft', JSON.stringify(formData));
+            }
+
+            // Load draft if available
+            function loadDraft() {
+                const draft = localStorage.getItem('productFormDraft');
+                if (draft) {
+                    try {
+                        const data = JSON.parse(draft);
+                        // Only load if less than 1 hour old
+                        if (Date.now() - data.timestamp < 3600000) {
+                            if (confirm('Found unsaved changes. Would you like to restore them?')) {
+                                nameInput.value = data.name || '';
+                                priceInput.value = data.price || '';
+                                imageInput.value = data.image || '';
+                                
+                                // Trigger validation
+                                validateName();
+                                validatePrice();
+                                validateImageUrl();
+                                
+                                // Load image preview if URL exists
+                                if (data.image && isValidUrl(data.image)) {
+                                    loadImagePreview(data.image);
+                                }
+                            }
+                        }
+                        localStorage.removeItem('productFormDraft');
+                    } catch (e) {
+                        localStorage.removeItem('productFormDraft');
+                    }
+                }
+            }
+
+            // Auto-save on input
+            [nameInput, priceInput, imageInput].forEach(input => {
+                input.addEventListener('input', autoSave);
+            });
+
+            // Load draft on page load
+            loadDraft();
+
+            // Clear draft on successful submission
+            form.addEventListener('submit', function() {
+                localStorage.removeItem('productFormDraft');
+            });
+        });
+    </script>
+</body>
+</html>
